@@ -64,7 +64,6 @@ body{background:linear-gradient(180deg,#EAF2FF,#F7F9FC 40%) fixed,var(--bg)!impo
   <div class="small" id="period" style="margin-top:6px"></div>
   <label id="l_bonus"></label><input type="number" id="bonus" inputmode="decimal" placeholder="0">
 </div>
-<div class="card sum" id="sum"></div>
 <div class="card">
   <h2 id="h_add"></h2>
   <label id="l_date"></label><input type="date" id="date">
@@ -74,7 +73,8 @@ body{background:linear-gradient(180deg,#EAF2FF,#F7F9FC 40%) fixed,var(--bg)!impo
   <div id="msg"></div>
 </div>
 <div class="card"><h2 id="h_days"></h2><div id="days"></div></div>
-<div class="card"><h2 id="h_leave"></h2><div class="sum" id="leave"></div></div>
+<div class="card sum" id="sum"></div>
+<div class="card"><h2 id="h_leave"></h2><div id="leave"></div></div>
 </section>
 <section id="pArc" style="display:none">
 <div class="card"><h2 id="h_lvc"></h2><div id="lvc"></div></div>
@@ -104,12 +104,12 @@ body{background:linear-gradient(180deg,#EAF2FF,#F7F9FC 40%) fixed,var(--bg)!impo
 const T={
 ar:{ttl:"حاسبة المرتب",lang:"English",month:"الشهر",sal:"المرتب الشهري",nMain:"الرئيسية",nSet:"الإعدادات",bonus:"بونص يدوي (المبلغ)",fix:"بونص ثابت (يضاف على المرتب)",fixl:"البونص الثابت",manb:"بونص يدوي",sd:"يوم بداية الشهر",base:"الأساس للحساب",period:"الفترة",basehint:"الأساس للحساب = المرتب = ",basic:"الأساس",sum:"ملخص الشهر",hr:"سعر الساعة",ot:"الإضافي",ded:"الخصومات",net:"صافي المرتب",add:"إضافة سجل ليوم",date:"التاريخ",
 tOt:"إضافي",tDed:"خصم",tLv:"إجازة",hours:"عدد الساعات",mult:"المعامل",half:"نصف يوم",full:"يوم كامل",count:"العدد",days:"أيام الشهر",none:"لا توجد سجلات",
-lv:"رصيد الإجازات",bal:"الرصيد",used:"المستخدم",rem:"المتبقي",set:"الإعدادات",dpm:"أيام الشهر",hpd:"ساعات اليوم",url:"رابط Google Sheets (Apps Script)",
+lv:"Annual",bal:"الرصيد",used:"المستخدم",rem:"المتبقي",set:"الإعدادات",dpm:"أيام الشهر",hpd:"ساعات اليوم",url:"رابط Google Sheets (Apps Script)",
 sync:"مزامنة كل السجلات مع Sheets",pull:"سحب السجلات من Sheets",pulled:"تم السحب من Sheets",pullerr:"تعذر السحب، راجع الرابط",clr:"مسح إضافي وخصومات الشهر",clrl:"مسح سجل الإجازات",sure:"اضغط تاني للتأكيد",added:"تمت الإضافة",synced:"تم الإرسال لـ Sheets",nourl:"حط رابط Sheets في الإعدادات الأول",
 cur:"ج",d:"يوم",dayTot:"إجمالي اليوم",nArc:"الأرشيف",arc:"الشهور السابقة",chart:"الإضافي والخصومات",lvc:"عداد الإجازات السنوية",of:"من",nodata:"لا توجد بيانات",nodate:"اختار التاريخ",nohrs:"ادخل الساعات"},
 en:{ttl:"Salary Calculator",lang:"عربي",month:"Month",sal:"Monthly salary",nMain:"Main",nSet:"Settings",bonus:"Manual bonus (amount)",fix:"Fixed bonus (added on top of salary)",fixl:"Fixed bonus",manb:"Manual bonus",sd:"Month start day",base:"Calculation base",period:"Period",basehint:"Calculation base = salary = ",basic:"Base",sum:"Month summary",hr:"Hourly rate",ot:"Overtime",ded:"Deductions",net:"Net salary",add:"Add a day entry",date:"Date",
 tOt:"Overtime",tDed:"Deduction",tLv:"Leave",hours:"Hours",mult:"Multiplier",half:"Half day",full:"Full day",count:"Count",days:"Days of the month",none:"No entries",
-lv:"Leave balance",bal:"Balance",used:"Used",rem:"Remaining",set:"Settings",dpm:"Days per month",hpd:"Hours per day",url:"Google Sheets link (Apps Script)",
+lv:"Annual",bal:"Balance",used:"Used",rem:"Remaining",set:"Settings",dpm:"Days per month",hpd:"Hours per day",url:"Google Sheets link (Apps Script)",
 sync:"Sync all entries to Sheets",pull:"Load entries from Sheets",pulled:"Loaded from Sheets",pullerr:"Could not load, check the link",clr:"Clear month overtime & deductions",clrl:"Clear leave log",sure:"Tap again to confirm",added:"Added",synced:"Sent to Sheets",nourl:"Set the Sheets link in Settings first",
 cur:"EGP",d:"d",dayTot:"Day total",nArc:"Archive",arc:"Past months",chart:"Overtime & deductions",lvc:"Annual leave counter",of:"of",nodata:"No data",nodate:"Pick a date",nohrs:"Enter hours"}};
 const $=id=>document.getElementById(id);
@@ -183,7 +183,7 @@ function render(){
 }
 function leaveHTML(used){
   const bal=+S.bal||0,rem=bal-used,pc=bal?Math.min(1,used/bal):0,R=40,C=2*Math.PI*R;
-  return `<div class="ring"><svg width="104" height="104" viewBox="0 0 104 104"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0D47A1"/><stop offset="1" stop-color="#42A5F5"/></linearGradient></defs><circle cx="52" cy="52" r="${R}" fill="none" stroke="var(--p2)" stroke-width="10"/><circle cx="52" cy="52" r="${R}" fill="none" stroke="#2196F3" stroke-width="10" stroke-linecap="round" stroke-dasharray="${C*pc} ${C}" transform="rotate(-90 52 52)"/><text x="52" y="54" text-anchor="middle" font-size="26" font-weight="700" fill="var(--t)">${rem}</text><text x="52" y="72" text-anchor="middle" font-size="11" fill="var(--m)">${t("rem")}</text></svg><div class="lt"><div><span>${t("bal")}</span><b>${bal}</b></div><div><span>${t("used")}</span><b>${used}</b></div><div><span>${t("rem")}</span><b class="pos">${rem}</b></div></div></div><div class="bar"><i style="width:${pc*100}%"></i></div><div class="small" style="margin-top:6px;text-align:center">${used} ${t("of")} ${bal} ${t("d")}</div>`}
+  return `<div class="ring"><svg width="104" height="104" viewBox="0 0 104 104"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0D47A1"/><stop offset="1" stop-color="#42A5F5"/></linearGradient></defs><circle cx="52" cy="52" r="${R}" fill="none" stroke="var(--p2)" stroke-width="10"/><circle cx="52" cy="52" r="${R}" fill="none" stroke="#2196F3" stroke-width="10" stroke-linecap="round" stroke-dasharray="${C*pc} ${C}" transform="rotate(-90 52 52)"/><text x="52" y="54" text-anchor="middle" font-size="26" font-weight="700" fill="var(--t)">${rem}</text><text x="52" y="72" text-anchor="middle" font-size="11" fill="var(--m)">${t("rem")}</text></svg><div class="lt"><div><span>${t("bal")}</span><b>${bal}</b></div><div><span>${t("used")}</span><b>${used}</b></div></div></div><div class="bar"><i style="width:${pc*100}%"></i></div><div class="small" style="margin-top:6px;text-align:center">${used} ${t("of")} ${bal} ${t("d")}</div>`}
 function mkey(d){const[y,m,dd]=d.split("-").map(Number);const x=dd>=sdv()?new Date(y,m-1,1):new Date(y,m-2,1);return `${x.getFullYear()}-${pad(x.getMonth()+1)}`}
 function renderArc(){
   const ks=new Set(S.entries.filter(e=>e.type!="lv").map(e=>mkey(e.date)));ks.add($("month").value);
