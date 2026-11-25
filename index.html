@@ -180,13 +180,14 @@ $("sync").onclick=()=>post(S.entries.map(row),{replace:true});
 $("pull").onclick=()=>{
   if(!S.url){$("msg2").textContent=t("nourl");return}
   fetch(S.url).then(r=>r.json()).then(d=>{
+    const num=x=>+String(x).replace(/[٠-٩]/g,c=>"٠١٢٣٤٥٦٧٨٩".indexOf(c)).replace(/[٫,]/g,".");
     const have=new Set(S.entries.map(e=>e.id));
     (d.rows||[]).forEach(r=>{
       const id=String(r[7]||"");if(!id||have.has(id))return;
       const k=r[1]=="overtime"?"ot":r[1]=="deduction"?"ded":"lv";
       const e={id,date:String(r[0]),type:k};
-      if(k=="ot"){e.hours=+r[2];e.mult=+r[3]}
-      if(k=="ded"){e.days=+r[4];e.count=+r[5]||1}
+      if(k=="ot"){e.hours=num(r[2]);e.mult=num(r[3])}
+      if(k=="ded"){e.days=num(r[4]);e.count=num(r[5])||1}
       S.entries.push(e);
     });
     save();render();$("msg2").textContent=t("pulled");
