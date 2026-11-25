@@ -75,6 +75,7 @@ input,select{width:100%;padding:10px;border:1px solid var(--bd);border-radius:10
 </div>
 <div class="card">
   <button class="btn s" id="sync"></button>
+  <button class="btn s" id="pull"></button>
   <button class="btn d" id="clr"></button>
   <button class="btn d" id="clrl"></button>
   <div id="msg2" class="small" style="margin-top:6px"></div>
@@ -86,12 +87,12 @@ const T={
 ar:{ttl:"حاسبة المرتب",lang:"English",month:"الشهر",sal:"المرتب الشهري",nMain:"الرئيسية",nSet:"الإعدادات",bonus:"بونص يدوي (المبلغ)",fix:"بونص ثابت (يضاف على المرتب)",fixl:"البونص الثابت",manb:"بونص يدوي",sd:"يوم بداية الشهر",base:"الأساس للحساب",period:"الفترة",basehint:"الأساس للحساب = المرتب = ",basic:"الأساس",sum:"ملخص الشهر",hr:"سعر الساعة",ot:"الإضافي",ded:"الخصومات",net:"صافي المرتب",add:"إضافة سجل ليوم",date:"التاريخ",
 tOt:"إضافي",tDed:"خصم",tLv:"إجازة",hours:"عدد الساعات",mult:"المعامل",half:"نصف يوم",full:"يوم كامل",count:"العدد",days:"أيام الشهر",none:"لا توجد سجلات",
 lv:"رصيد الإجازات",bal:"الرصيد",used:"المستخدم",rem:"المتبقي",set:"الإعدادات",dpm:"أيام الشهر",hpd:"ساعات اليوم",url:"رابط Google Sheets (Apps Script)",
-sync:"مزامنة كل السجلات مع Sheets",clr:"مسح إضافي وخصومات الشهر",clrl:"مسح سجل الإجازات",sure:"اضغط تاني للتأكيد",added:"تمت الإضافة",synced:"تم الإرسال لـ Sheets",nourl:"حط رابط Sheets في الإعدادات الأول",
+sync:"مزامنة كل السجلات مع Sheets",pull:"سحب السجلات من Sheets",pulled:"تم السحب من Sheets",pullerr:"تعذر السحب، راجع الرابط",clr:"مسح إضافي وخصومات الشهر",clrl:"مسح سجل الإجازات",sure:"اضغط تاني للتأكيد",added:"تمت الإضافة",synced:"تم الإرسال لـ Sheets",nourl:"حط رابط Sheets في الإعدادات الأول",
 cur:"ج",d:"يوم",dayTot:"إجمالي اليوم",nodate:"اختار التاريخ",nohrs:"ادخل الساعات"},
 en:{ttl:"Salary Calculator",lang:"عربي",month:"Month",sal:"Monthly salary",nMain:"Main",nSet:"Settings",bonus:"Manual bonus (amount)",fix:"Fixed bonus (added on top of salary)",fixl:"Fixed bonus",manb:"Manual bonus",sd:"Month start day",base:"Calculation base",period:"Period",basehint:"Calculation base = salary = ",basic:"Base",sum:"Month summary",hr:"Hourly rate",ot:"Overtime",ded:"Deductions",net:"Net salary",add:"Add a day entry",date:"Date",
 tOt:"Overtime",tDed:"Deduction",tLv:"Leave",hours:"Hours",mult:"Multiplier",half:"Half day",full:"Full day",count:"Count",days:"Days of the month",none:"No entries",
 lv:"Leave balance",bal:"Balance",used:"Used",rem:"Remaining",set:"Settings",dpm:"Days per month",hpd:"Hours per day",url:"Google Sheets link (Apps Script)",
-sync:"Sync all entries to Sheets",clr:"Clear month overtime & deductions",clrl:"Clear leave log",sure:"Tap again to confirm",added:"Added",synced:"Sent to Sheets",nourl:"Set the Sheets link in Settings first",
+sync:"Sync all entries to Sheets",pull:"Load entries from Sheets",pulled:"Loaded from Sheets",pullerr:"Could not load, check the link",clr:"Clear month overtime & deductions",clrl:"Clear leave log",sure:"Tap again to confirm",added:"Added",synced:"Sent to Sheets",nourl:"Set the Sheets link in Settings first",
 cur:"EGP",d:"d",dayTot:"Day total",nodate:"Pick a date",nohrs:"Enter hours"}};
 const $=id=>document.getElementById(id);
 let S=JSON.parse(localStorage.getItem("salary_v2")||"null")||{lang:"ar",salary:"",dpm:26,hpd:8,bal:15,url:"",entries:[]};S=Object.assign({fixb:500,sd:26,bonuses:{},theme:"light"},S);S.bonuses=S.bonuses||{};
@@ -127,7 +128,7 @@ function render(){
   $("h_days").textContent=t("days");$("h_leave").textContent=t("lv");$("h_set").textContent=t("set");
   $("nMain").textContent=t("nMain");$("nSet").textContent=t("nSet");$("nMain").className=page=="main"?"on":"";$("nSet").className=page=="set"?"on":"";$("pMain").style.display=page=="main"?"":"none";$("pSet").style.display=page=="set"?"":"none";$("l_bonus").textContent=t("bonus");$("l_fix").textContent=t("fix");$("l_sd").textContent=t("sd");
   $("l_dpm").textContent=t("dpm");$("l_hpd").textContent=t("hpd");$("l_bal").textContent=t("bal");$("l_url").textContent=t("url");
-  $("sync").textContent=t("sync");$("clr").textContent=t("clr");$("clrl").textContent=t("clrl");$("add").textContent=t("add");
+  $("sync").textContent=t("sync");$("pull").textContent=t("pull");$("clr").textContent=t("clr");$("clrl").textContent=t("clrl");$("add").textContent=t("add");
   $("salary").value=S.salary;$("dpm").value=S.dpm;$("hpd").value=S.hpd;$("bal").value=S.bal;$("url").value=S.url;$("fixb").value=S.fixb;$("sd").value=S.sd;
   const c=calc(),cu=" "+t("cur");$("period").textContent=t("period")+": "+c.p.s+" → "+c.p.e;$("bonus").value=c.man||"";$("basehint").textContent=t("basehint")+f(c.base);
   $("sum").innerHTML=`<h2 style="margin:0 0 6px;font-size:15px;color:var(--p)">${t("sum")}</h2>
@@ -158,13 +159,13 @@ function render(){
       else{chip=`<span class="chip c-lv">${t("tLv")}</span>`;txt="1 "+t("d")}
       return `<div class="it"><span>${chip}${txt}</span><button data-id="${e.id}">×</button></div>`}).join("");
     return `<div class="day"><div class="dh"><span>${d}</span><span class="${tot>=0?"pos":"neg"}">${tot>=0?"+":""}${f(tot)}</span></div>${items}</div>`}).join(""):`<div class="small">${t("none")}</div>`;
-  $("days").querySelectorAll("button").forEach(b=>b.onclick=()=>{S.entries=S.entries.filter(e=>e.id!=b.dataset.id);save();render()});
+  $("days").querySelectorAll("button").forEach(b=>b.onclick=()=>{S.entries=S.entries.filter(e=>e.id!=b.dataset.id);save();render();if(S.url)post([],{del:b.dataset.id})});
   const used=S.entries.filter(e=>e.type=="lv").length;
   $("leave").innerHTML=`<div><span>${t("bal")}</span><b>${S.bal}</b></div><div><span>${t("used")}</span><b>${used}</b></div><div><span>${t("rem")}</span><b class="pos">${S.bal-used}</b></div>`;
 }
-function post(rows){
+function post(rows,extra){
   if(!S.url){($("msg").textContent=$("msg2").textContent=t("nourl"));return Promise.resolve(false)}
-  return fetch(S.url,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({rows})}).then(()=>{($("msg").textContent=$("msg2").textContent=t("synced"));return true}).catch(()=>false);
+  return fetch(S.url,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(Object.assign({rows},extra||{}))}).then(()=>{($("msg").textContent=$("msg2").textContent=t("synced"));return true}).catch(()=>false);
 }
 function row(e){const c=calc();return[e.date,e.type=="ot"?"overtime":e.type=="ded"?"deduction":"leave",e.hours||"",e.mult||"",e.days||"",e.count||"",+val(e,c).toFixed(2),e.id]}
 $("add").onclick=()=>{
@@ -175,7 +176,22 @@ $("add").onclick=()=>{
   S.entries.push(e);save();render();$("msg").textContent=t("added");
   if(S.url)post([row(e)]);
 };
-$("sync").onclick=()=>post(S.entries.map(row));
+$("sync").onclick=()=>post(S.entries.map(row),{replace:true});
+$("pull").onclick=()=>{
+  if(!S.url){$("msg2").textContent=t("nourl");return}
+  fetch(S.url).then(r=>r.json()).then(d=>{
+    const have=new Set(S.entries.map(e=>e.id));
+    (d.rows||[]).forEach(r=>{
+      const id=String(r[7]||"");if(!id||have.has(id))return;
+      const k=r[1]=="overtime"?"ot":r[1]=="deduction"?"ded":"lv";
+      const e={id,date:String(r[0]),type:k};
+      if(k=="ot"){e.hours=+r[2];e.mult=+r[3]}
+      if(k=="ded"){e.days=+r[4];e.count=+r[5]||1}
+      S.entries.push(e);
+    });
+    save();render();$("msg2").textContent=t("pulled");
+  }).catch(()=>{$("msg2").textContent=t("pullerr")});
+};
 $("lang").onclick=()=>{S.lang=S.lang=="ar"?"en":"ar";save();render()};
 function applyTheme(){document.documentElement.dataset.theme=S.theme=="dark"?"dark":"light";$("thL").classList.toggle("on",S.theme!="dark");$("thD").classList.toggle("on",S.theme=="dark")}
 $("thL").onclick=()=>{S.theme="light";save();applyTheme()};
