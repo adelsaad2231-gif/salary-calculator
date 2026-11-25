@@ -43,11 +43,19 @@ input,select{width:100%;padding:10px;border:1px solid var(--bd);border-radius:10
 header,.nav{background:linear-gradient(135deg,#0D47A1,#1E88E5 60%,#42A5F5)!important}.btn:not(.s):not(.d),.tabs button.on{background:linear-gradient(135deg,#0D47A1,#1E88E5 60%,#42A5F5)!important;border-color:transparent}.nav button.on{background:#fff}
 body{background:linear-gradient(180deg,#EAF2FF,#F7F9FC 40%) fixed,var(--bg)!important;min-height:100vh}[data-theme=dark] body{background:linear-gradient(180deg,#0A1224,#0D1017 45%) fixed,var(--bg)!important}
 .sum{background:linear-gradient(135deg,var(--card),var(--p2))!important}.btn.d{background:linear-gradient(135deg,#FFA726,#E65100)!important}.card{box-shadow:0 2px 10px #1565C022}
+
+.nav button{padding:10px 4px}
+.ring{display:flex;align-items:center;gap:16px}.ring svg{flex:none}.ring .lt{flex:1}.ring .lt div{display:flex;justify-content:space-between;padding:4px 0;font-size:14px}
+.bar{height:8px;border-radius:8px;background:var(--p2);overflow:hidden;margin-top:8px}.bar i{display:block;height:100%;background:linear-gradient(90deg,#0D47A1,#42A5F5)}
+.legend{display:flex;gap:14px;font-size:12px;color:var(--m);margin-top:6px;justify-content:center}.legend b{display:inline-block;width:10px;height:10px;border-radius:3px;margin-inline-end:5px;vertical-align:middle}
+.mrow{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid var(--bd)}.mrow:first-of-type{border-top:0}
+.mrow .mn{font-weight:700;font-size:14px}.mrow .ms{font-size:11px;color:var(--m);margin-top:2px}.mrow .mv{text-align:end}.mrow .mv b{font-size:15px;color:var(--p)}[data-theme=dark] .mrow .mv b{color:#5B9DFF}
+.mrow .mv div{font-size:11px;margin-top:2px}
 </style>
 </head>
 <body>
 <header><h1 id="ttl"></h1><div class="hbtns"><button class="ic" id="thL" title="Light">☀️</button><button class="ic" id="thD" title="Dark">🌙</button><button id="lang"></button></div></header>
-<nav class="nav"><button id="nMain"></button><button id="nSet"></button></nav>
+<nav class="nav"><button id="nMain"></button><button id="nArc"></button><button id="nSet"></button></nav>
 <main>
 <section id="pMain">
 <div class="card">
@@ -66,6 +74,11 @@ body{background:linear-gradient(180deg,#EAF2FF,#F7F9FC 40%) fixed,var(--bg)!impo
 </div>
 <div class="card"><h2 id="h_days"></h2><div id="days"></div></div>
 <div class="card"><h2 id="h_leave"></h2><div class="sum" id="leave"></div></div>
+</section>
+<section id="pArc" style="display:none">
+<div class="card"><h2 id="h_lvc"></h2><div id="lvc"></div></div>
+<div class="card"><h2 id="h_chart"></h2><div id="chart"></div></div>
+<div class="card"><h2 id="h_arc"></h2><div id="arc"></div></div>
 </section>
 <section id="pSet" style="display:none">
 <div class="card">
@@ -92,12 +105,12 @@ ar:{ttl:"حاسبة المرتب",lang:"English",month:"الشهر",sal:"الم�
 tOt:"إضافي",tDed:"خصم",tLv:"إجازة",hours:"عدد الساعات",mult:"المعامل",half:"نصف يوم",full:"يوم كامل",count:"العدد",days:"أيام الشهر",none:"لا توجد سجلات",
 lv:"رصيد الإجازات",bal:"الرصيد",used:"المستخدم",rem:"المتبقي",set:"الإعدادات",dpm:"أيام الشهر",hpd:"ساعات اليوم",url:"رابط Google Sheets (Apps Script)",
 sync:"مزامنة كل السجلات مع Sheets",pull:"سحب السجلات من Sheets",pulled:"تم السحب من Sheets",pullerr:"تعذر السحب، راجع الرابط",clr:"مسح إضافي وخصومات الشهر",clrl:"مسح سجل الإجازات",sure:"اضغط تاني للتأكيد",added:"تمت الإضافة",synced:"تم الإرسال لـ Sheets",nourl:"حط رابط Sheets في الإعدادات الأول",
-cur:"ج",d:"يوم",dayTot:"إجمالي اليوم",nodate:"اختار التاريخ",nohrs:"ادخل الساعات"},
+cur:"ج",d:"يوم",dayTot:"إجمالي اليوم",nArc:"الأرشيف",arc:"الشهور السابقة",chart:"الإضافي والخصومات",lvc:"عداد الإجازات السنوية",of:"من",nodata:"لا توجد بيانات",nodate:"اختار التاريخ",nohrs:"ادخل الساعات"},
 en:{ttl:"Salary Calculator",lang:"عربي",month:"Month",sal:"Monthly salary",nMain:"Main",nSet:"Settings",bonus:"Manual bonus (amount)",fix:"Fixed bonus (added on top of salary)",fixl:"Fixed bonus",manb:"Manual bonus",sd:"Month start day",base:"Calculation base",period:"Period",basehint:"Calculation base = salary = ",basic:"Base",sum:"Month summary",hr:"Hourly rate",ot:"Overtime",ded:"Deductions",net:"Net salary",add:"Add a day entry",date:"Date",
 tOt:"Overtime",tDed:"Deduction",tLv:"Leave",hours:"Hours",mult:"Multiplier",half:"Half day",full:"Full day",count:"Count",days:"Days of the month",none:"No entries",
 lv:"Leave balance",bal:"Balance",used:"Used",rem:"Remaining",set:"Settings",dpm:"Days per month",hpd:"Hours per day",url:"Google Sheets link (Apps Script)",
 sync:"Sync all entries to Sheets",pull:"Load entries from Sheets",pulled:"Loaded from Sheets",pullerr:"Could not load, check the link",clr:"Clear month overtime & deductions",clrl:"Clear leave log",sure:"Tap again to confirm",added:"Added",synced:"Sent to Sheets",nourl:"Set the Sheets link in Settings first",
-cur:"EGP",d:"d",dayTot:"Day total",nodate:"Pick a date",nohrs:"Enter hours"}};
+cur:"EGP",d:"d",dayTot:"Day total",nArc:"Archive",arc:"Past months",chart:"Overtime & deductions",lvc:"Annual leave counter",of:"of",nodata:"No data",nodate:"Pick a date",nohrs:"Enter hours"}};
 const $=id=>document.getElementById(id);
 let S=JSON.parse(localStorage.getItem("salary_v2")||"null")||{lang:"ar",salary:"",dpm:26,hpd:8,bal:15,url:"",entries:[]};S=Object.assign({fixb:500,sd:26,bonuses:{},theme:"light"},S);S.bonuses=S.bonuses||{};
 let type="ot";
@@ -114,8 +127,8 @@ $("date").value=iso(today);
 let page="main";
 $("month").onchange=()=>{const m=$("month").value;if(m)$("date").value=periodOf(m).s;render()};
 const inP=(e,p)=>e.date>=p.s&&e.date<=p.e;
-function calc(){
-  const sal=+S.salary||0,fix=+S.fixb||0,base=sal,dayR=base/S.dpm,hr=dayR/S.hpd,m=$("month").value,p=periodOf(m);
+function calc(mm){
+  const sal=+S.salary||0,fix=+S.fixb||0,base=sal,dayR=base/S.dpm,hr=dayR/S.hpd,m=mm||$("month").value,p=periodOf(m);
   let ot=0,ded=0;
   S.entries.filter(e=>inP(e,p)).forEach(e=>{
     if(e.type=="ot")ot+=hr*e.hours*e.mult;
@@ -130,7 +143,7 @@ function render(){
   $("ttl").textContent=t("ttl");$("lang").textContent=t("lang");
   $("l_month").textContent=t("month");$("l_sal").textContent=t("sal");$("h_add").textContent=t("add");$("l_date").textContent=t("date");
   $("h_days").textContent=t("days");$("h_leave").textContent=t("lv");$("h_set").textContent=t("set");
-  $("nMain").textContent=t("nMain");$("nSet").textContent=t("nSet");$("nMain").className=page=="main"?"on":"";$("nSet").className=page=="set"?"on":"";$("pMain").style.display=page=="main"?"":"none";$("pSet").style.display=page=="set"?"":"none";$("l_bonus").textContent=t("bonus");$("l_fix").textContent=t("fix");$("l_sd").textContent=t("sd");
+  $("nMain").textContent=t("nMain");$("nSet").textContent=t("nSet");$("nMain").className=page=="main"?"on":"";$("nSet").className=page=="set"?"on":"";$("pMain").style.display=page=="main"?"":"none";$("pSet").style.display=page=="set"?"":"none";$("pArc").style.display=page=="arc"?"":"none";$("nArc").className=page=="arc"?"on":"";$("nArc").textContent=t("nArc");$("h_lvc").textContent=t("lvc");$("h_chart").textContent=t("chart");$("h_arc").textContent=t("arc");$("l_bonus").textContent=t("bonus");$("l_fix").textContent=t("fix");$("l_sd").textContent=t("sd");
   $("l_dpm").textContent=t("dpm");$("l_hpd").textContent=t("hpd");$("l_bal").textContent=t("bal");$("l_url").textContent=t("url");
   $("sync").textContent=t("sync");$("pull").textContent=t("pull");$("clr").textContent=t("clr");$("clrl").textContent=t("clrl");$("add").textContent=t("add");
   $("salary").value=S.salary;$("dpm").value=S.dpm;$("hpd").value=S.hpd;$("bal").value=S.bal;$("url").value=S.url;$("fixb").value=S.fixb;$("sd").value=S.sd;
@@ -165,7 +178,25 @@ function render(){
     return `<div class="day"><div class="dh"><span>${d}</span><span class="${tot>=0?"pos":"neg"}">${tot>=0?"+":""}${f(tot)}</span></div>${items}</div>`}).join(""):`<div class="small">${t("none")}</div>`;
   $("days").querySelectorAll("button").forEach(b=>b.onclick=()=>{S.entries=S.entries.filter(e=>e.id!=b.dataset.id);save();render();if(S.url)post([],{del:b.dataset.id})});
   const used=S.entries.filter(e=>e.type=="lv").length;
-  $("leave").innerHTML=`<div><span>${t("bal")}</span><b>${S.bal}</b></div><div><span>${t("used")}</span><b>${used}</b></div><div><span>${t("rem")}</span><b class="pos">${S.bal-used}</b></div>`;
+  const lh=leaveHTML(used);$("leave").innerHTML=lh;$("lvc").innerHTML=lh;renderArc();
+}
+function leaveHTML(used){
+  const bal=+S.bal||0,rem=bal-used,pc=bal?Math.min(1,used/bal):0,R=40,C=2*Math.PI*R;
+  return `<div class="ring"><svg width="104" height="104" viewBox="0 0 104 104"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0D47A1"/><stop offset="1" stop-color="#42A5F5"/></linearGradient></defs><circle cx="52" cy="52" r="${R}" fill="none" stroke="var(--p2)" stroke-width="10"/><circle cx="52" cy="52" r="${R}" fill="none" stroke="#2196F3" stroke-width="10" stroke-linecap="round" stroke-dasharray="${C*pc} ${C}" transform="rotate(-90 52 52)"/><text x="52" y="54" text-anchor="middle" font-size="26" font-weight="700" fill="var(--t)">${rem}</text><text x="52" y="72" text-anchor="middle" font-size="11" fill="var(--m)">${t("rem")}</text></svg><div class="lt"><div><span>${t("bal")}</span><b>${bal}</b></div><div><span>${t("used")}</span><b>${used}</b></div><div><span>${t("rem")}</span><b class="pos">${rem}</b></div></div></div><div class="bar"><i style="width:${pc*100}%"></i></div><div class="small" style="margin-top:6px;text-align:center">${used} ${t("of")} ${bal} ${t("d")}</div>`}
+function mkey(d){const[y,m,dd]=d.split("-").map(Number);const x=dd>=sdv()?new Date(y,m-1,1):new Date(y,m-2,1);return `${x.getFullYear()}-${pad(x.getMonth()+1)}`}
+function renderArc(){
+  const ks=new Set(S.entries.filter(e=>e.type!="lv").map(e=>mkey(e.date)));ks.add($("month").value);
+  const ms=[...ks].sort().reverse();
+  const data=ms.map(m=>({m,c:calc(m)}));
+  const mn=m=>{const[y,mo]=m.split("-").map(Number);return new Date(y,mo-1,1).toLocaleDateString(S.lang=="ar"?"ar-EG":"en",{month:"long",year:"numeric"})};
+  $("arc").innerHTML=data.map(({m,c})=>`<div class="mrow"><div><div class="mn">${mn(m)}</div><div class="ms">${c.p.s} → ${c.p.e}</div></div><div class="mv"><b>${f(c.net)} ${t("cur")}</b><div><span class="pos">+${f(c.ot)}</span> &nbsp; <span class="neg">-${f(c.ded)}</span></div></div></div>`).join("");
+  const cd=data.slice(0,6).reverse();const mx=Math.max(1,...cd.map(x=>Math.max(x.c.ot,x.c.ded)));
+  const W=320,H=170,bw=16,g=(W-cd.length*bw*2)/(cd.length+1);let sv="";
+  [0.25,0.5,0.75,1].forEach(q=>{const y=130-q*100;sv+=`<line x1="0" x2="${W}" y1="${y}" y2="${y}" stroke="var(--bd)" stroke-dasharray="3 3"/>`});
+  cd.forEach((x,i)=>{const x0=g+i*(2*bw+g),h1=x.c.ot/mx*100,h2=x.c.ded/mx*100;
+    sv+=`<rect x="${x0}" y="${130-h1}" width="${bw}" height="${h1}" rx="4" fill="#2E7D32"/><rect x="${x0+bw+2}" y="${130-h2}" width="${bw}" height="${h2}" rx="4" fill="#E65100"/>`;
+    sv+=`<text x="${x0+bw}" y="150" text-anchor="middle" font-size="11" fill="var(--m)">${x.m.slice(5)}</text><text x="${x0+bw}" y="165" text-anchor="middle" font-size="9" fill="var(--m)">${x.m.slice(0,4)}</text>`});
+  $("chart").innerHTML=cd.length?`<svg viewBox="0 0 ${W} ${H}" width="100%">${sv}</svg><div class="legend"><span><b style="background:#2E7D32"></b>${t("ot")}</span><span><b style="background:#E65100"></b>${t("ded")}</span></div>`:`<div class="small">${t("nodata")}</div>`;
 }
 function post(rows,extra){
   if(!S.url){($("msg").textContent=$("msg2").textContent=t("nourl"));return Promise.resolve(false)}
@@ -204,7 +235,7 @@ $("thD").onclick=()=>{S.theme="dark";save();applyTheme()};
 [["salary","salary"],["fixb","fixb"],["dpm","dpm"],["hpd","hpd"],["bal","bal"],["sd","sd"]].forEach(([i,k])=>$(i).oninput=()=>{S[k]=$(i).value===""?"":+$(i).value;save();render2()});
 function render2(){const a=document.activeElement.id;render();if(a){const el=$(a);if(el){el.focus()}}}
 $("bonus").oninput=()=>{S.bonuses[$("month").value]=$("bonus").value===""?0:+$("bonus").value;save();render2()};
-$("nMain").onclick=()=>{page="main";render()};$("nSet").onclick=()=>{page="set";render()};
+$("nArc").onclick=()=>{page="arc";render()};$("nMain").onclick=()=>{page="main";render()};$("nSet").onclick=()=>{page="set";render()};
 $("url").oninput=()=>{S.url=$("url").value.trim();save()};
 function confirmBtn(id,fn){let w=false,o;$(id).onclick=()=>{if(!w){w=true;o=$(id).textContent;$(id).textContent=t("sure");setTimeout(()=>{w=false;$(id).textContent=o},3000)}else{w=false;fn();save();render()}}}
 confirmBtn("clr",()=>{const p=periodOf($("month").value);S.entries=S.entries.filter(e=>!(e.type!="lv"&&inP(e,p)))});
