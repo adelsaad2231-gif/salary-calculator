@@ -5,40 +5,43 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>حاسبة المرتب</title>
 <style>
-:root{--p:#1565C0;--p2:#E3F0FF;--bg:#F2F5FA;--t:#1B2430;--m:#6B7686;--r:#D32F2F;--g:#2E7D32;--o:#EF6C00}
+:root{--p:#1565C0;--p2:#E3F0FF;--bg:#F2F5FA;--t:#1B2430;--m:#6B7686;--r:#D32F2F;--g:#2E7D32;--o:#EF6C00;--card:#fff;--bd:#D5DCE8}
+[data-theme=dark]{--p2:#16324F;--bg:#0F1520;--t:#E6ECF5;--m:#93A0B4;--card:#1B2331;--bd:#2C3A50}
+[data-theme=dark] .sum .net,[data-theme=dark] .card h2,[data-theme=dark] .c-lv{color:#7FB3E8}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--t);font-family:system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;padding-bottom:40px}
 header{background:var(--p);color:#fff;padding:16px;display:flex;justify-content:space-between;align-items:center}
 header h1{font-size:19px;margin:0}
 header button{background:#ffffff33;color:#fff;border:0;border-radius:20px;padding:6px 14px;font-size:14px}
 main{max-width:560px;margin:0 auto;padding:12px}
-.card{background:#fff;border-radius:16px;padding:14px;margin-bottom:12px;box-shadow:0 1px 4px #0001}
+.card{background:var(--card);border-radius:16px;padding:14px;margin-bottom:12px;box-shadow:0 1px 4px #0001}
 .card h2{font-size:15px;margin:0 0 10px;color:var(--p)}
 label{display:block;font-size:12px;color:var(--m);margin:8px 0 3px}
-input,select{width:100%;padding:10px;border:1px solid #D5DCE8;border-radius:10px;font-size:15px;background:#fff;color:var(--t)}
+input,select{width:100%;padding:10px;border:1px solid var(--bd);border-radius:10px;font-size:15px;background:var(--card);color:var(--t)}
 .row{display:flex;gap:8px}.row>*{flex:1}
 .btn{background:var(--p);color:#fff;border:0;border-radius:12px;padding:11px;font-size:15px;width:100%;margin-top:10px}
 .btn.s{background:var(--p2);color:var(--p)}
-.btn.d{background:#FDECEA;color:var(--r)}
-.tabs{display:flex;gap:6px}.tabs button{flex:1;padding:9px 4px;border-radius:10px;border:1px solid #D5DCE8;background:#fff;font-size:13px;color:var(--t)}
+.btn.d{background:#D32F2F26;color:var(--r)}
+.tabs{display:flex;gap:6px}.tabs button{flex:1;padding:9px 4px;border-radius:10px;border:1px solid var(--bd);background:var(--card);font-size:13px;color:var(--t)}
 .tabs button.on{background:var(--p);color:#fff;border-color:var(--p)}
 .sum div{display:flex;justify-content:space-between;padding:6px 0;font-size:15px}
 .sum .net{border-top:2px solid var(--p2);margin-top:6px;padding-top:10px;font-weight:700;font-size:18px;color:var(--p)}
 .pos{color:var(--g)}.neg{color:var(--r)}
-.day{border-top:1px solid #EEF1F6;padding:8px 0}
+.day{border-top:1px solid var(--bd);padding:8px 0}
 .day:first-child{border-top:0}
 .dh{display:flex;justify-content:space-between;font-weight:600;font-size:14px}
 .it{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--m);padding:3px 0}
 .it button{border:0;background:none;color:var(--r);font-size:18px}
 .chip{display:inline-block;border-radius:8px;padding:1px 8px;font-size:12px;margin-inline-end:6px}
-.c-ot{background:#E8F5E9;color:var(--g)}.c-ded{background:#FDECEA;color:var(--r)}.c-lv{background:var(--p2);color:var(--p)}
+.c-ot{background:#2E7D3226;color:var(--g)}.c-ded{background:#D32F2F26;color:var(--r)}.c-lv{background:var(--p2);color:var(--p)}
 .nav{display:flex;gap:0;background:var(--p);padding:0 12px 10px}.nav button{flex:1;border:0;background:#ffffff26;color:#fff;padding:10px;font-size:15px;font-weight:600}.nav button:first-child{border-radius:12px 0 0 12px}.nav button:last-child{border-radius:0 12px 12px 0}[dir=rtl] .nav button:first-child{border-radius:0 12px 12px 0}[dir=rtl] .nav button:last-child{border-radius:12px 0 0 12px}.nav button.on{background:#fff;color:var(--p)}
 .small{font-size:12px;color:var(--m)}
 #msg{font-size:12px;color:var(--m);margin-top:6px;min-height:16px}
+.hbtns{display:flex;gap:6px;align-items:center}.hbtns .ic{border-radius:50%;padding:5px 9px;font-size:13px;line-height:1.2}.hbtns .ic.on{background:#fff}
 </style>
 </head>
 <body>
-<header><h1 id="ttl"></h1><button id="lang"></button></header>
+<header><h1 id="ttl"></h1><div class="hbtns"><button class="ic" id="thL" title="Light">☀️</button><button class="ic" id="thD" title="Dark">🌙</button><button id="lang"></button></div></header>
 <nav class="nav"><button id="nMain"></button><button id="nSet"></button></nav>
 <main>
 <section id="pMain">
@@ -79,18 +82,18 @@ input,select{width:100%;padding:10px;border:1px solid #D5DCE8;border-radius:10px
 </main>
 <script>
 const T={
-ar:{ttl:"حاسبة المرتب",lang:"English",month:"الشهر",sal:"المرتب الشهري (شامل الثابت)",nMain:"الرئيسية",nSet:"الإعدادات",bonus:"بونص يدوي (المبلغ)",fix:"بونص ثابت (غير محسوب عليه خصم أو إضافي)",fixl:"البونص الثابت",manb:"بونص يدوي",sd:"يوم بداية الشهر",base:"الأساس للحساب",period:"الفترة",basehint:"الأساس للحساب = المرتب - البونص الثابت = ",basic:"الأساس",sum:"ملخص الشهر",hr:"سعر الساعة",ot:"الإضافي",ded:"الخصومات",net:"صافي المرتب",add:"إضافة سجل ليوم",date:"التاريخ",
+ar:{ttl:"حاسبة المرتب",lang:"English",month:"الشهر",sal:"المرتب الشهري",nMain:"الرئيسية",nSet:"الإعدادات",bonus:"بونص يدوي (المبلغ)",fix:"بونص ثابت (يضاف على المرتب)",fixl:"البونص الثابت",manb:"بونص يدوي",sd:"يوم بداية الشهر",base:"الأساس للحساب",period:"الفترة",basehint:"الأساس للحساب = المرتب = ",basic:"الأساس",sum:"ملخص الشهر",hr:"سعر الساعة",ot:"الإضافي",ded:"الخصومات",net:"صافي المرتب",add:"إضافة سجل ليوم",date:"التاريخ",
 tOt:"إضافي",tDed:"خصم",tLv:"إجازة",hours:"عدد الساعات",mult:"المعامل",half:"نصف يوم",full:"يوم كامل",count:"العدد",days:"أيام الشهر",none:"لا توجد سجلات",
 lv:"رصيد الإجازات",bal:"الرصيد",used:"المستخدم",rem:"المتبقي",set:"الإعدادات",dpm:"أيام الشهر",hpd:"ساعات اليوم",url:"رابط Google Sheets (Apps Script)",
 sync:"مزامنة كل السجلات مع Sheets",clr:"مسح إضافي وخصومات الشهر",clrl:"مسح سجل الإجازات",sure:"اضغط تاني للتأكيد",added:"تمت الإضافة",synced:"تم الإرسال لـ Sheets",nourl:"حط رابط Sheets في الإعدادات الأول",
 cur:"ج",d:"يوم",dayTot:"إجمالي اليوم",nodate:"اختار التاريخ",nohrs:"ادخل الساعات"},
-en:{ttl:"Salary Calculator",lang:"عربي",month:"Month",sal:"Monthly salary (incl. fixed bonus)",nMain:"Main",nSet:"Settings",bonus:"Manual bonus (amount)",fix:"Fixed bonus (no deduction/overtime applied)",fixl:"Fixed bonus",manb:"Manual bonus",sd:"Month start day",base:"Calculation base",period:"Period",basehint:"Calculation base = salary - fixed bonus = ",basic:"Base",sum:"Month summary",hr:"Hourly rate",ot:"Overtime",ded:"Deductions",net:"Net salary",add:"Add a day entry",date:"Date",
+en:{ttl:"Salary Calculator",lang:"عربي",month:"Month",sal:"Monthly salary",nMain:"Main",nSet:"Settings",bonus:"Manual bonus (amount)",fix:"Fixed bonus (added on top of salary)",fixl:"Fixed bonus",manb:"Manual bonus",sd:"Month start day",base:"Calculation base",period:"Period",basehint:"Calculation base = salary = ",basic:"Base",sum:"Month summary",hr:"Hourly rate",ot:"Overtime",ded:"Deductions",net:"Net salary",add:"Add a day entry",date:"Date",
 tOt:"Overtime",tDed:"Deduction",tLv:"Leave",hours:"Hours",mult:"Multiplier",half:"Half day",full:"Full day",count:"Count",days:"Days of the month",none:"No entries",
 lv:"Leave balance",bal:"Balance",used:"Used",rem:"Remaining",set:"Settings",dpm:"Days per month",hpd:"Hours per day",url:"Google Sheets link (Apps Script)",
 sync:"Sync all entries to Sheets",clr:"Clear month overtime & deductions",clrl:"Clear leave log",sure:"Tap again to confirm",added:"Added",synced:"Sent to Sheets",nourl:"Set the Sheets link in Settings first",
 cur:"EGP",d:"d",dayTot:"Day total",nodate:"Pick a date",nohrs:"Enter hours"}};
 const $=id=>document.getElementById(id);
-let S=JSON.parse(localStorage.getItem("salary_v2")||"null")||{lang:"ar",salary:"",dpm:26,hpd:8,bal:15,url:"",entries:[]};S=Object.assign({fixb:500,sd:26,bonuses:{}},S);S.bonuses=S.bonuses||{};
+let S=JSON.parse(localStorage.getItem("salary_v2")||"null")||{lang:"ar",salary:"",dpm:26,hpd:8,bal:15,url:"",entries:[]};S=Object.assign({fixb:500,sd:26,bonuses:{},theme:"light"},S);S.bonuses=S.bonuses||{};
 let type="ot";
 const save=()=>localStorage.setItem("salary_v2",JSON.stringify(S));
 const t=k=>T[S.lang][k];
@@ -106,7 +109,7 @@ let page="main";
 $("month").onchange=()=>{const m=$("month").value;if(m)$("date").value=periodOf(m).s;render()};
 const inP=(e,p)=>e.date>=p.s&&e.date<=p.e;
 function calc(){
-  const sal=+S.salary||0,fix=+S.fixb||0,base=sal-fix,dayR=base/S.dpm,hr=dayR/S.hpd,m=$("month").value,p=periodOf(m);
+  const sal=+S.salary||0,fix=+S.fixb||0,base=sal,dayR=base/S.dpm,hr=dayR/S.hpd,m=$("month").value,p=periodOf(m);
   let ot=0,ded=0;
   S.entries.filter(e=>inP(e,p)).forEach(e=>{
     if(e.type=="ot")ot+=hr*e.hours*e.mult;
@@ -173,6 +176,9 @@ $("add").onclick=()=>{
 };
 $("sync").onclick=()=>post(S.entries.map(row));
 $("lang").onclick=()=>{S.lang=S.lang=="ar"?"en":"ar";save();render()};
+function applyTheme(){document.documentElement.dataset.theme=S.theme=="dark"?"dark":"light";$("thL").classList.toggle("on",S.theme!="dark");$("thD").classList.toggle("on",S.theme=="dark")}
+$("thL").onclick=()=>{S.theme="light";save();applyTheme()};
+$("thD").onclick=()=>{S.theme="dark";save();applyTheme()};
 [["salary","salary"],["fixb","fixb"],["dpm","dpm"],["hpd","hpd"],["bal","bal"],["sd","sd"]].forEach(([i,k])=>$(i).oninput=()=>{S[k]=$(i).value===""?"":+$(i).value;save();render2()});
 function render2(){const a=document.activeElement.id;render();if(a){const el=$(a);if(el){el.focus()}}}
 $("bonus").oninput=()=>{S.bonuses[$("month").value]=$("bonus").value===""?0:+$("bonus").value;save();render2()};
@@ -181,7 +187,7 @@ $("url").oninput=()=>{S.url=$("url").value.trim();save()};
 function confirmBtn(id,fn){let w=false,o;$(id).onclick=()=>{if(!w){w=true;o=$(id).textContent;$(id).textContent=t("sure");setTimeout(()=>{w=false;$(id).textContent=o},3000)}else{w=false;fn();save();render()}}}
 confirmBtn("clr",()=>{const p=periodOf($("month").value);S.entries=S.entries.filter(e=>!(e.type!="lv"&&inP(e,p)))});
 confirmBtn("clrl",()=>{S.entries=S.entries.filter(e=>e.type!="lv")});
-render();
+applyTheme();render();
 </script>
 </body>
 </html>
