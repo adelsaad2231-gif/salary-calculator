@@ -32,20 +32,22 @@ input,select{width:100%;padding:10px;border:1px solid #D5DCE8;border-radius:10px
 .it button{border:0;background:none;color:var(--r);font-size:18px}
 .chip{display:inline-block;border-radius:8px;padding:1px 8px;font-size:12px;margin-inline-end:6px}
 .c-ot{background:#E8F5E9;color:var(--g)}.c-ded{background:#FDECEA;color:var(--r)}.c-lv{background:var(--p2);color:var(--p)}
+.nav{display:flex;gap:0;background:var(--p);padding:0 12px 10px}.nav button{flex:1;border:0;background:#ffffff26;color:#fff;padding:10px;font-size:15px;font-weight:600}.nav button:first-child{border-radius:12px 0 0 12px}.nav button:last-child{border-radius:0 12px 12px 0}[dir=rtl] .nav button:first-child{border-radius:0 12px 12px 0}[dir=rtl] .nav button:last-child{border-radius:12px 0 0 12px}.nav button.on{background:#fff;color:var(--p)}
 .small{font-size:12px;color:var(--m)}
 #msg{font-size:12px;color:var(--m);margin-top:6px;min-height:16px}
 </style>
 </head>
 <body>
 <header><h1 id="ttl"></h1><button id="lang"></button></header>
+<nav class="nav"><button id="nMain"></button><button id="nSet"></button></nav>
 <main>
+<section id="pMain">
 <div class="card">
   <label id="l_month"></label><input type="month" id="month">
-  <label id="l_sal"></label><input type="number" id="salary" inputmode="decimal">
+  <div class="small" id="period" style="margin-top:6px"></div>
+  <label id="l_bonus"></label><input type="number" id="bonus" inputmode="decimal" placeholder="0">
 </div>
-
 <div class="card sum" id="sum"></div>
-
 <div class="card">
   <h2 id="h_add"></h2>
   <label id="l_date"></label><input type="date" id="date">
@@ -54,54 +56,64 @@ input,select{width:100%;padding:10px;border:1px solid #D5DCE8;border-radius:10px
   <button class="btn" id="add"></button>
   <div id="msg"></div>
 </div>
-
 <div class="card"><h2 id="h_days"></h2><div id="days"></div></div>
-
-<div class="card">
-  <h2 id="h_leave"></h2>
-  <div class="sum" id="leave"></div>
-</div>
-
+<div class="card"><h2 id="h_leave"></h2><div class="sum" id="leave"></div></div>
+</section>
+<section id="pSet" style="display:none">
 <div class="card">
   <h2 id="h_set"></h2>
+  <label id="l_sal"></label><input type="number" id="salary" inputmode="decimal">
+  <label id="l_fix"></label><input type="number" id="fixb" inputmode="decimal">
   <div class="row"><div><label id="l_dpm"></label><input type="number" id="dpm"></div><div><label id="l_hpd"></label><input type="number" id="hpd"></div></div>
-  <label id="l_bal"></label><input type="number" id="bal">
+  <div class="row"><div><label id="l_sd"></label><input type="number" id="sd" min="1" max="28"></div><div><label id="l_bal"></label><input type="number" id="bal"></div></div>
+  <div class="small" id="basehint" style="margin-top:8px"></div>
   <label id="l_url"></label><input type="url" id="url" placeholder="https://script.google.com/macros/s/.../exec" dir="ltr">
+</div>
+<div class="card">
   <button class="btn s" id="sync"></button>
   <button class="btn d" id="clr"></button>
   <button class="btn d" id="clrl"></button>
+  <div id="msg2" class="small" style="margin-top:6px"></div>
 </div>
+</section>
 </main>
 <script>
 const T={
-ar:{ttl:"حاسبة المرتب",lang:"English",month:"الشهر",sal:"المرتب الأساسي",sum:"ملخص الشهر",hr:"سعر الساعة",ot:"الإضافي",ded:"الخصومات",net:"صافي المرتب",add:"إضافة سجل ليوم",date:"التاريخ",
+ar:{ttl:"حاسبة المرتب",lang:"English",month:"الشهر",sal:"المرتب الشهري (شامل الثابت)",nMain:"الرئيسية",nSet:"الإعدادات",bonus:"بونص يدوي (المبلغ)",fix:"بونص ثابت (غير محسوب عليه خصم أو إضافي)",fixl:"البونص الثابت",manb:"بونص يدوي",sd:"يوم بداية الشهر",base:"الأساس للحساب",period:"الفترة",basehint:"الأساس للحساب = المرتب - البونص الثابت = ",basic:"الأساس",sum:"ملخص الشهر",hr:"سعر الساعة",ot:"الإضافي",ded:"الخصومات",net:"صافي المرتب",add:"إضافة سجل ليوم",date:"التاريخ",
 tOt:"إضافي",tDed:"خصم",tLv:"إجازة",hours:"عدد الساعات",mult:"المعامل",half:"نصف يوم",full:"يوم كامل",count:"العدد",days:"أيام الشهر",none:"لا توجد سجلات",
 lv:"رصيد الإجازات",bal:"الرصيد",used:"المستخدم",rem:"المتبقي",set:"الإعدادات",dpm:"أيام الشهر",hpd:"ساعات اليوم",url:"رابط Google Sheets (Apps Script)",
 sync:"مزامنة كل السجلات مع Sheets",clr:"مسح إضافي وخصومات الشهر",clrl:"مسح سجل الإجازات",sure:"اضغط تاني للتأكيد",added:"تمت الإضافة",synced:"تم الإرسال لـ Sheets",nourl:"حط رابط Sheets في الإعدادات الأول",
 cur:"ج",d:"يوم",dayTot:"إجمالي اليوم",nodate:"اختار التاريخ",nohrs:"ادخل الساعات"},
-en:{ttl:"Salary Calculator",lang:"عربي",month:"Month",sal:"Base salary",sum:"Month summary",hr:"Hourly rate",ot:"Overtime",ded:"Deductions",net:"Net salary",add:"Add a day entry",date:"Date",
+en:{ttl:"Salary Calculator",lang:"عربي",month:"Month",sal:"Monthly salary (incl. fixed bonus)",nMain:"Main",nSet:"Settings",bonus:"Manual bonus (amount)",fix:"Fixed bonus (no deduction/overtime applied)",fixl:"Fixed bonus",manb:"Manual bonus",sd:"Month start day",base:"Calculation base",period:"Period",basehint:"Calculation base = salary - fixed bonus = ",basic:"Base",sum:"Month summary",hr:"Hourly rate",ot:"Overtime",ded:"Deductions",net:"Net salary",add:"Add a day entry",date:"Date",
 tOt:"Overtime",tDed:"Deduction",tLv:"Leave",hours:"Hours",mult:"Multiplier",half:"Half day",full:"Full day",count:"Count",days:"Days of the month",none:"No entries",
 lv:"Leave balance",bal:"Balance",used:"Used",rem:"Remaining",set:"Settings",dpm:"Days per month",hpd:"Hours per day",url:"Google Sheets link (Apps Script)",
 sync:"Sync all entries to Sheets",clr:"Clear month overtime & deductions",clrl:"Clear leave log",sure:"Tap again to confirm",added:"Added",synced:"Sent to Sheets",nourl:"Set the Sheets link in Settings first",
 cur:"EGP",d:"d",dayTot:"Day total",nodate:"Pick a date",nohrs:"Enter hours"}};
 const $=id=>document.getElementById(id);
-let S=JSON.parse(localStorage.getItem("salary_v2")||"null")||{lang:"ar",salary:"",dpm:26,hpd:8,bal:15,url:"",entries:[]};
+let S=JSON.parse(localStorage.getItem("salary_v2")||"null")||{lang:"ar",salary:"",dpm:26,hpd:8,bal:15,url:"",entries:[]};S=Object.assign({fixb:500,sd:26,bonuses:{}},S);S.bonuses=S.bonuses||{};
 let type="ot";
 const save=()=>localStorage.setItem("salary_v2",JSON.stringify(S));
 const t=k=>T[S.lang][k];
 const f=n=>n.toLocaleString("en",{minimumFractionDigits:2,maximumFractionDigits:2});
 const today=new Date();const pad=n=>String(n).padStart(2,"0");
-$("month").value=`${today.getFullYear()}-${pad(today.getMonth()+1)}`;
-$("date").value=`${today.getFullYear()}-${pad(today.getMonth()+1)}-${pad(today.getDate())}`;
-$("month").onchange=()=>{const m=$("month").value;if(m)$("date").value=m+"-01";render()};
+const iso=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const sdv=()=>Math.min(28,Math.max(1,+S.sd||26));
+function periodOf(m){const[y,mo]=m.split("-").map(Number);const s=new Date(y,mo-1,sdv()),e=new Date(y,mo,sdv()-1);return{s:iso(s),e:iso(e)}}
+const defM=today.getDate()>=sdv()?new Date(today.getFullYear(),today.getMonth(),1):new Date(today.getFullYear(),today.getMonth()-1,1);
+$("month").value=`${defM.getFullYear()}-${pad(defM.getMonth()+1)}`;
+$("date").value=iso(today);
+let page="main";
+$("month").onchange=()=>{const m=$("month").value;if(m)$("date").value=periodOf(m).s;render()};
+const inP=(e,p)=>e.date>=p.s&&e.date<=p.e;
 function calc(){
-  const sal=+S.salary||0,dayR=sal/S.dpm,hr=dayR/S.hpd,m=$("month").value;
+  const sal=+S.salary||0,fix=+S.fixb||0,base=sal-fix,dayR=base/S.dpm,hr=dayR/S.hpd,m=$("month").value,p=periodOf(m);
   let ot=0,ded=0;
-  S.entries.filter(e=>e.date.startsWith(m)).forEach(e=>{
+  S.entries.filter(e=>inP(e,p)).forEach(e=>{
     if(e.type=="ot")ot+=hr*e.hours*e.mult;
     if(e.type=="ded")ded+=dayR*e.days*e.count;
   });
-  return{sal,dayR,hr,ot,ded,net:sal+ot-ded};
+  const man=+S.bonuses[m]||0;
+  return{sal,fix,base,man,dayR,hr,ot,ded,net:base+ot-ded+fix+man,p,m};
 }
 function val(e,c){return e.type=="ot"?c.hr*e.hours*e.mult:e.type=="ded"?-c.dayR*e.days*e.count:0}
 function render(){
@@ -109,11 +121,15 @@ function render(){
   $("ttl").textContent=t("ttl");$("lang").textContent=t("lang");
   $("l_month").textContent=t("month");$("l_sal").textContent=t("sal");$("h_add").textContent=t("add");$("l_date").textContent=t("date");
   $("h_days").textContent=t("days");$("h_leave").textContent=t("lv");$("h_set").textContent=t("set");
+  $("nMain").textContent=t("nMain");$("nSet").textContent=t("nSet");$("nMain").className=page=="main"?"on":"";$("nSet").className=page=="set"?"on":"";$("pMain").style.display=page=="main"?"":"none";$("pSet").style.display=page=="set"?"":"none";$("l_bonus").textContent=t("bonus");$("l_fix").textContent=t("fix");$("l_sd").textContent=t("sd");
   $("l_dpm").textContent=t("dpm");$("l_hpd").textContent=t("hpd");$("l_bal").textContent=t("bal");$("l_url").textContent=t("url");
   $("sync").textContent=t("sync");$("clr").textContent=t("clr");$("clrl").textContent=t("clrl");$("add").textContent=t("add");
-  $("salary").value=S.salary;$("dpm").value=S.dpm;$("hpd").value=S.hpd;$("bal").value=S.bal;$("url").value=S.url;
-  const c=calc(),cu=" "+t("cur");
+  $("salary").value=S.salary;$("dpm").value=S.dpm;$("hpd").value=S.hpd;$("bal").value=S.bal;$("url").value=S.url;$("fixb").value=S.fixb;$("sd").value=S.sd;
+  const c=calc(),cu=" "+t("cur");$("period").textContent=t("period")+": "+c.p.s+" → "+c.p.e;$("bonus").value=c.man||"";$("basehint").textContent=t("basehint")+f(c.base);
   $("sum").innerHTML=`<h2 style="margin:0 0 6px;font-size:15px;color:var(--p)">${t("sum")}</h2>
+  <div><span>${t("basic")}</span><b>${f(c.base)}</b></div>
+  <div><span>${t("fixl")}</span><b class="pos">+${f(c.fix)}</b></div>
+  <div><span>${t("manb")}</span><b class="pos">+${f(c.man)}</b></div>
   <div><span>${t("hr")}</span><b>${f(c.hr)}</b></div>
   <div><span>${t("ot")}</span><b class="pos">+${f(c.ot)}</b></div>
   <div><span>${t("ded")}</span><b class="neg">-${f(c.ded)}</b></div>
@@ -126,7 +142,7 @@ function render(){
   if(type=="ded")h=`<div class="row"><div><label>${t("tDed")}</label><select id="f_d"><option value="0.5">${t("half")}</option><option value="1">${t("full")}</option></select></div><div><label>${t("count")}</label><input type="number" id="f_c" value="1" min="1"></div></div>`;
   $("form").innerHTML=h;
   // days
-  const m=$("month").value,es=S.entries.filter(e=>e.date.startsWith(m));
+  const es=S.entries.filter(e=>inP(e,c.p));
   const by={};es.forEach(e=>(by[e.date]=by[e.date]||[]).push(e));
   const ds=Object.keys(by).sort();
   $("days").innerHTML=ds.length?ds.map(d=>{
@@ -143,8 +159,8 @@ function render(){
   $("leave").innerHTML=`<div><span>${t("bal")}</span><b>${S.bal}</b></div><div><span>${t("used")}</span><b>${used}</b></div><div><span>${t("rem")}</span><b class="pos">${S.bal-used}</b></div>`;
 }
 function post(rows){
-  if(!S.url){$("msg").textContent=t("nourl");return Promise.resolve(false)}
-  return fetch(S.url,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({rows})}).then(()=>{$("msg").textContent=t("synced");return true}).catch(()=>false);
+  if(!S.url){($("msg").textContent=$("msg2").textContent=t("nourl"));return Promise.resolve(false)}
+  return fetch(S.url,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({rows})}).then(()=>{($("msg").textContent=$("msg2").textContent=t("synced"));return true}).catch(()=>false);
 }
 function row(e){const c=calc();return[e.date,e.type=="ot"?"overtime":e.type=="ded"?"deduction":"leave",e.hours||"",e.mult||"",e.days||"",e.count||"",+val(e,c).toFixed(2),e.id]}
 $("add").onclick=()=>{
@@ -157,11 +173,13 @@ $("add").onclick=()=>{
 };
 $("sync").onclick=()=>post(S.entries.map(row));
 $("lang").onclick=()=>{S.lang=S.lang=="ar"?"en":"ar";save();render()};
-[["salary","salary"],["dpm","dpm"],["hpd","hpd"],["bal","bal"]].forEach(([i,k])=>$(i).oninput=()=>{S[k]=$(i).value===""?"":+$(i).value;save();const c=calc();const m=$("sum");render2()});
+[["salary","salary"],["fixb","fixb"],["dpm","dpm"],["hpd","hpd"],["bal","bal"],["sd","sd"]].forEach(([i,k])=>$(i).oninput=()=>{S[k]=$(i).value===""?"":+$(i).value;save();render2()});
 function render2(){const a=document.activeElement.id;render();if(a){const el=$(a);if(el){el.focus()}}}
+$("bonus").oninput=()=>{S.bonuses[$("month").value]=$("bonus").value===""?0:+$("bonus").value;save();render2()};
+$("nMain").onclick=()=>{page="main";render()};$("nSet").onclick=()=>{page="set";render()};
 $("url").oninput=()=>{S.url=$("url").value.trim();save()};
 function confirmBtn(id,fn){let w=false,o;$(id).onclick=()=>{if(!w){w=true;o=$(id).textContent;$(id).textContent=t("sure");setTimeout(()=>{w=false;$(id).textContent=o},3000)}else{w=false;fn();save();render()}}}
-confirmBtn("clr",()=>{const m=$("month").value;S.entries=S.entries.filter(e=>!(e.type!="lv"&&e.date.startsWith(m)))});
+confirmBtn("clr",()=>{const p=periodOf($("month").value);S.entries=S.entries.filter(e=>!(e.type!="lv"&&inP(e,p)))});
 confirmBtn("clrl",()=>{S.entries=S.entries.filter(e=>e.type!="lv")});
 render();
 </script>
