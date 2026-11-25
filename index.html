@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>حاسبة المرتب</title>
+<style>
+:root{--p:#1565C0;--p2:#E3F0FF;--bg:#F2F5FA;--t:#1B2430;--m:#6B7686;--r:#D32F2F;--g:#2E7D32;--o:#EF6C00}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--t);font-family:system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;padding-bottom:40px}
+header{background:var(--p);color:#fff;padding:16px;display:flex;justify-content:space-between;align-items:center}
+header h1{font-size:19px;margin:0}
+header button{background:#ffffff33;color:#fff;border:0;border-radius:20px;padding:6px 14px;font-size:14px}
+main{max-width:560px;margin:0 auto;padding:12px}
+.card{background:#fff;border-radius:16px;padding:14px;margin-bottom:12px;box-shadow:0 1px 4px #0001}
+.card h2{font-size:15px;margin:0 0 10px;color:var(--p)}
+label{display:block;font-size:12px;color:var(--m);margin:8px 0 3px}
+input,select{width:100%;padding:10px;border:1px solid #D5DCE8;border-radius:10px;font-size:15px;background:#fff;color:var(--t)}
+.row{display:flex;gap:8px}.row>*{flex:1}
+.btn{background:var(--p);color:#fff;border:0;border-radius:12px;padding:11px;font-size:15px;width:100%;margin-top:10px}
+.btn.s{background:var(--p2);color:var(--p)}
+.btn.d{background:#FDECEA;color:var(--r)}
+.tabs{display:flex;gap:6px}.tabs button{flex:1;padding:9px 4px;border-radius:10px;border:1px solid #D5DCE8;background:#fff;font-size:13px;color:var(--t)}
+.tabs button.on{background:var(--p);color:#fff;border-color:var(--p)}
+.sum div{display:flex;justify-content:space-between;padding:6px 0;font-size:15px}
+.sum .net{border-top:2px solid var(--p2);margin-top:6px;padding-top:10px;font-weight:700;font-size:18px;color:var(--p)}
+.pos{color:var(--g)}.neg{color:var(--r)}
+.day{border-top:1px solid #EEF1F6;padding:8px 0}
+.day:first-child{border-top:0}
+.dh{display:flex;justify-content:space-between;font-weight:600;font-size:14px}
+.it{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--m);padding:3px 0}
+.it button{border:0;background:none;color:var(--r);font-size:18px}
+.chip{display:inline-block;border-radius:8px;padding:1px 8px;font-size:12px;margin-inline-end:6px}
+.c-ot{background:#E8F5E9;color:var(--g)}.c-ded{background:#FDECEA;color:var(--r)}.c-lv{background:var(--p2);color:var(--p)}
+.small{font-size:12px;color:var(--m)}
+#msg{font-size:12px;color:var(--m);margin-top:6px;min-height:16px}
+</style>
+</head>
+<body>
+<header><h1 id="ttl"></h1><button id="lang"></button></header>
+<main>
+<div class="card">
+  <label id="l_month"></label><input type="month" id="month">
+  <label id="l_sal"></label><input type="number" id="salary" inputmode="decimal">
+</div>
+
+<div class="card sum" id="sum"></div>
+
+<div class="card">
+  <h2 id="h_add"></h2>
+  <label id="l_date"></label><input type="date" id="date">
+  <div class="tabs" id="tabs" style="margin-top:10px"></div>
+  <div id="form"></div>
+  <button class="btn" id="add"></button>
+  <div id="msg"></div>
+</div>
+
+<div class="card"><h2 id="h_days"></h2><div id="days"></div></div>
+
+<div class="card">
+  <h2 id="h_leave"></h2>
+  <div class="sum" id="leave"></div>
+</div>
+
+<div class="card">
+  <h2 id="h_set"></h2>
+  <div class="row"><div><label id="l_dpm"></label><input type="number" id="dpm"></div><div><label id="l_hpd"></label><input type="number" id="hpd"></div></div>
+  <label id="l_bal"></label><input type="number" id="bal">
+  <label id="l_url"></label><input type="url" id="url" placeholder="https://script.google.com/macros/s/.../exec" dir="ltr">
+  <button class="btn s" id="sync"></button>
+  <button class="btn d" id="clr"></button>
+  <button class="btn d" id="clrl"></button>
+</div>
+</main>
+<script>
+const T={
+ar:{ttl:"حاسبة المرتب",lang:"English",month:"الشهر",sal:"المرتب الأساسي",sum:"ملخص الشهر",hr:"سعر الساعة",ot:"الإضافي",ded:"الخصومات",net:"صافي المرتب",add:"إضافة سجل ليوم",date:"التاريخ",
+tOt:"إضافي",tDed:"خصم",tLv:"إجازة",hours:"عدد الساعات",mult:"المعامل",half:"نصف يوم",full:"يوم كامل",count:"العدد",days:"أيام الشهر",none:"لا توجد سجلات",
+lv:"رصيد الإجازات",bal:"الرصيد",used:"المستخدم",rem:"المتبقي",set:"الإعدادات",dpm:"أيام الشهر",hpd:"ساعات اليوم",url:"رابط Google Sheets (Apps Script)",
+sync:"مزامنة كل السجلات مع Sheets",clr:"مسح إضافي وخصومات الشهر",clrl:"مسح سجل الإجازات",sure:"اضغط تاني للتأكيد",added:"تمت الإضافة",synced:"تم الإرسال لـ Sheets",nourl:"حط رابط Sheets في الإعدادات الأول",
+cur:"ج",d:"يوم",dayTot:"إجمالي اليوم",nodate:"اختار التاريخ",nohrs:"ادخل الساعات"},
+en:{ttl:"Salary Calculator",lang:"عربي",month:"Month",sal:"Base salary",sum:"Month summary",hr:"Hourly rate",ot:"Overtime",ded:"Deductions",net:"Net salary",add:"Add a day entry",date:"Date",
+tOt:"Overtime",tDed:"Deduction",tLv:"Leave",hours:"Hours",mult:"Multiplier",half:"Half day",full:"Full day",count:"Count",days:"Days of the month",none:"No entries",
+lv:"Leave balance",bal:"Balance",used:"Used",rem:"Remaining",set:"Settings",dpm:"Days per month",hpd:"Hours per day",url:"Google Sheets link (Apps Script)",
+sync:"Sync all entries to Sheets",clr:"Clear month overtime & deductions",clrl:"Clear leave log",sure:"Tap again to confirm",added:"Added",synced:"Sent to Sheets",nourl:"Set the Sheets link in Settings first",
+cur:"EGP",d:"d",dayTot:"Day total",nodate:"Pick a date",nohrs:"Enter hours"}};
+const $=id=>document.getElementById(id);
+let S=JSON.parse(localStorage.getItem("salary_v2")||"null")||{lang:"ar",salary:"",dpm:26,hpd:8,bal:15,url:"",entries:[]};
+let type="ot";
+const save=()=>localStorage.setItem("salary_v2",JSON.stringify(S));
+const t=k=>T[S.lang][k];
+const f=n=>n.toLocaleString("en",{minimumFractionDigits:2,maximumFractionDigits:2});
+const today=new Date();const pad=n=>String(n).padStart(2,"0");
+$("month").value=`${today.getFullYear()}-${pad(today.getMonth()+1)}`;
+$("date").value=`${today.getFullYear()}-${pad(today.getMonth()+1)}-${pad(today.getDate())}`;
+$("month").onchange=()=>{const m=$("month").value;if(m)$("date").value=m+"-01";render()};
+function calc(){
+  const sal=+S.salary||0,dayR=sal/S.dpm,hr=dayR/S.hpd,m=$("month").value;
+  let ot=0,ded=0;
+  S.entries.filter(e=>e.date.startsWith(m)).forEach(e=>{
+    if(e.type=="ot")ot+=hr*e.hours*e.mult;
+    if(e.type=="ded")ded+=dayR*e.days*e.count;
+  });
+  return{sal,dayR,hr,ot,ded,net:sal+ot-ded};
+}
+function val(e,c){return e.type=="ot"?c.hr*e.hours*e.mult:e.type=="ded"?-c.dayR*e.days*e.count:0}
+function render(){
+  const L=S.lang;document.documentElement.lang=L;document.documentElement.dir=L=="ar"?"rtl":"ltr";
+  $("ttl").textContent=t("ttl");$("lang").textContent=t("lang");
+  $("l_month").textContent=t("month");$("l_sal").textContent=t("sal");$("h_add").textContent=t("add");$("l_date").textContent=t("date");
+  $("h_days").textContent=t("days");$("h_leave").textContent=t("lv");$("h_set").textContent=t("set");
+  $("l_dpm").textContent=t("dpm");$("l_hpd").textContent=t("hpd");$("l_bal").textContent=t("bal");$("l_url").textContent=t("url");
+  $("sync").textContent=t("sync");$("clr").textContent=t("clr");$("clrl").textContent=t("clrl");$("add").textContent=t("add");
+  $("salary").value=S.salary;$("dpm").value=S.dpm;$("hpd").value=S.hpd;$("bal").value=S.bal;$("url").value=S.url;
+  const c=calc(),cu=" "+t("cur");
+  $("sum").innerHTML=`<h2 style="margin:0 0 6px;font-size:15px;color:var(--p)">${t("sum")}</h2>
+  <div><span>${t("hr")}</span><b>${f(c.hr)}</b></div>
+  <div><span>${t("ot")}</span><b class="pos">+${f(c.ot)}</b></div>
+  <div><span>${t("ded")}</span><b class="neg">-${f(c.ded)}</b></div>
+  <div class="net"><span>${t("net")}</span><span>${f(c.net)}${cu}</span></div>`;
+  // tabs
+  $("tabs").innerHTML=[["ot","tOt"],["ded","tDed"],["lv","tLv"]].map(([k,n])=>`<button class="${type==k?"on":""}" data-k="${k}">${t(n)}</button>`).join("");
+  $("tabs").querySelectorAll("button").forEach(b=>b.onclick=()=>{type=b.dataset.k;render()});
+  let h="";
+  if(type=="ot")h=`<div class="row"><div><label>${t("hours")}</label><input type="number" step="0.25" id="f_h" inputmode="decimal"></div><div><label>${t("mult")}</label><select id="f_m"><option value="1.5">x1.5</option><option value="2">x2</option></select></div></div>`;
+  if(type=="ded")h=`<div class="row"><div><label>${t("tDed")}</label><select id="f_d"><option value="0.5">${t("half")}</option><option value="1">${t("full")}</option></select></div><div><label>${t("count")}</label><input type="number" id="f_c" value="1" min="1"></div></div>`;
+  $("form").innerHTML=h;
+  // days
+  const m=$("month").value,es=S.entries.filter(e=>e.date.startsWith(m));
+  const by={};es.forEach(e=>(by[e.date]=by[e.date]||[]).push(e));
+  const ds=Object.keys(by).sort();
+  $("days").innerHTML=ds.length?ds.map(d=>{
+    const tot=by[d].reduce((a,e)=>a+val(e,c),0);
+    const items=by[d].map(e=>{
+      let chip,txt;
+      if(e.type=="ot"){chip=`<span class="chip c-ot">${t("tOt")}</span>`;txt=`${e.hours}h x${e.mult} = +${f(val(e,c))}`}
+      else if(e.type=="ded"){chip=`<span class="chip c-ded">${t("tDed")}</span>`;txt=`${e.days==0.5?t("half"):t("full")} x${e.count} = ${f(val(e,c))}`}
+      else{chip=`<span class="chip c-lv">${t("tLv")}</span>`;txt="1 "+t("d")}
+      return `<div class="it"><span>${chip}${txt}</span><button data-id="${e.id}">×</button></div>`}).join("");
+    return `<div class="day"><div class="dh"><span>${d}</span><span class="${tot>=0?"pos":"neg"}">${tot>=0?"+":""}${f(tot)}</span></div>${items}</div>`}).join(""):`<div class="small">${t("none")}</div>`;
+  $("days").querySelectorAll("button").forEach(b=>b.onclick=()=>{S.entries=S.entries.filter(e=>e.id!=b.dataset.id);save();render()});
+  const used=S.entries.filter(e=>e.type=="lv").length;
+  $("leave").innerHTML=`<div><span>${t("bal")}</span><b>${S.bal}</b></div><div><span>${t("used")}</span><b>${used}</b></div><div><span>${t("rem")}</span><b class="pos">${S.bal-used}</b></div>`;
+}
+function post(rows){
+  if(!S.url){$("msg").textContent=t("nourl");return Promise.resolve(false)}
+  return fetch(S.url,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({rows})}).then(()=>{$("msg").textContent=t("synced");return true}).catch(()=>false);
+}
+function row(e){const c=calc();return[e.date,e.type=="ot"?"overtime":e.type=="ded"?"deduction":"leave",e.hours||"",e.mult||"",e.days||"",e.count||"",+val(e,c).toFixed(2),e.id]}
+$("add").onclick=()=>{
+  const date=$("date").value;if(!date){$("msg").textContent=t("nodate");return}
+  const e={id:Date.now().toString(36),date,type};
+  if(type=="ot"){e.hours=+$("f_h").value;e.mult=+$("f_m").value;if(!e.hours){$("msg").textContent=t("nohrs");return}}
+  if(type=="ded"){e.days=+$("f_d").value;e.count=+$("f_c").value||1}
+  S.entries.push(e);save();render();$("msg").textContent=t("added");
+  if(S.url)post([row(e)]);
+};
+$("sync").onclick=()=>post(S.entries.map(row));
+$("lang").onclick=()=>{S.lang=S.lang=="ar"?"en":"ar";save();render()};
+[["salary","salary"],["dpm","dpm"],["hpd","hpd"],["bal","bal"]].forEach(([i,k])=>$(i).oninput=()=>{S[k]=$(i).value===""?"":+$(i).value;save();const c=calc();const m=$("sum");render2()});
+function render2(){const a=document.activeElement.id;render();if(a){const el=$(a);if(el){el.focus()}}}
+$("url").oninput=()=>{S.url=$("url").value.trim();save()};
+function confirmBtn(id,fn){let w=false,o;$(id).onclick=()=>{if(!w){w=true;o=$(id).textContent;$(id).textContent=t("sure");setTimeout(()=>{w=false;$(id).textContent=o},3000)}else{w=false;fn();save();render()}}}
+confirmBtn("clr",()=>{const m=$("month").value;S.entries=S.entries.filter(e=>!(e.type!="lv"&&e.date.startsWith(m)))});
+confirmBtn("clrl",()=>{S.entries=S.entries.filter(e=>e.type!="lv")});
+render();
+</script>
+</body>
+</html>
